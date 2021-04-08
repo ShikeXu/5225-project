@@ -8,7 +8,7 @@ library(ggplot2)
 library(tidyr)
 library(dplyr)
 
-dt <- read.csv("alldata_Part1.csv")
+dt <- read.csv("../raw data/alldata_Part1.csv")
 
 
 ### By area by crime type ###
@@ -127,9 +127,11 @@ visual.fun <- function(year=NULL, state = 'WISCONSIN',  type='reported', data=dt
 }
 ```
 
-# Barplot and Spineplot in A Specific Year for 3 States in New England Area
+# Barplot and Spineplot in 2019 for 3 States in New England Area
 
-We can observe that most crimes in these 3 states happen in metro area. While, roberry and murder occur in outside of metro and rural areas in 2019.
+The year 2019 is used as our example for illustration purpose. All the relevant plots of other years can be obtained easily by changing the function parameters. In 2019, we can observe that most crimes in these 3 states occurred in metropolitan area, which makes sense as this area is the most populated region, so the crime cases were supposed to be higher. Interestingly, the cases of "robbery" and "murder and non negligent manslaughter" mainly occurred in outside of metropolitan and rural areas. This result may lead to potential policy changes on the arrangement of armed police officers and weapon distribution.
+
+
 ```{r, warning=FALSE, message=FALSE}
 fig_CT <- visual.fun(year = 2019, state = "CONNECTICUT")  
 fig_MA <- visual.fun(year = 2019, state = "MASSACHUSETTS") 
