@@ -121,7 +121,7 @@ visual.fun <- function(year=NULL, state = 'WISCONSIN',  type='reported', data=dt
   
 }
 
-aaa <- visual.fun(year = 2010, state = "MASSACHUSETTS")
+aaa <- visual.fun(year = 2019, state = "MASSACHUSETTS")
 
 aaa$Barplot.by.area
 aaa$Barplot.by.type
