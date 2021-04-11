@@ -7,8 +7,10 @@ output: pdf_document
 library(ggplot2)
 library(tidyr)
 library(dplyr)
+library(cowplot)
 
 dt <- read.csv("../raw data/alldata_Part1.csv")
+names(dt)[8:14] <- c("Murder", "Robbery", "Assault", "PropertyCrime", "Burglary", "LarcenyTheft", "VehicleTheft") 
 
 
 ### By area by crime type ###
@@ -24,7 +26,7 @@ visual.fun <- function(year=NULL, state = 'WISCONSIN',  type='reported', data=dt
     fig <- 
       mydata  %>%
       filter(State == state) %>%
-      gather(., crimetype, number_of_crime, ViolentCrime:Motorvehicletheft, factor_key = TRUE) %>%
+      gather(., crimetype, number_of_crime, ViolentCrime:VehicleTheft, factor_key = TRUE) %>%
       filter(Actual == indicator)%>%
       filter(!is.na(as.numeric(number_of_crime)))
     
@@ -41,8 +43,8 @@ visual.fun <- function(year=NULL, state = 'WISCONSIN',  type='reported', data=dt
       ylab("Number of Cases") + 
       ggtitle(paste("Barplot of Crime Type by Area for State", state, sep=" ")) +
       theme_bw() +
-      theme(axis.text.x = element_text(size = 12, angle = 60, hjust = 1),
-            legend.position = 'none') 
+      theme(axis.text.x = element_blank(), legend.position = 'none') +
+      theme(plot.title = element_text(size=8))
     
     
     ### by crime type ###
@@ -50,7 +52,7 @@ visual.fun <- function(year=NULL, state = 'WISCONSIN',  type='reported', data=dt
     fig1 <- 
       mydata  %>%
       filter(State == state) %>%
-      gather(., crimetype, number_of_crime, ViolentCrime:Motorvehicletheft, factor_key = TRUE) %>%
+      gather(., crimetype, number_of_crime, ViolentCrime:VehicleTheft, factor_key = TRUE) %>%
       filter(Actual == indicator) %>%
       group_by(State, crimetype) %>%
       summarise(total = sum(as.numeric(number_of_crime))) %>%
@@ -68,9 +70,9 @@ visual.fun <- function(year=NULL, state = 'WISCONSIN',  type='reported', data=dt
       ylab("Number of Cases") + 
       ggtitle(paste("Barplot of Crime Type for State", state, sep=" ")) +
       theme_bw() +
-      theme(axis.text.x = element_text(size = 12, angle = 60, hjust = 1),
-            legend.position = 'none') 
-    
+      theme(axis.text.x = element_text(size = 12, angle = 60, hjust = 1), legend.position = 'none') +
+      theme(plot.title = element_text(size=8))
+    # ,element_text(size = 12, angle = 60, hjust = 1
     
     ### Spine plot ###
     
@@ -80,46 +82,15 @@ visual.fun <- function(year=NULL, state = 'WISCONSIN',  type='reported', data=dt
       ylab("Number of Cases") + 
       ggtitle(paste("Spineplot of Crime Type for State", state, sep=" ")) +
       theme_bw() +
-      theme(axis.text.x = element_text(size = 12, angle = 60, hjust = 1)) 
+      theme(axis.text.x = element_text(size = 12, angle = 60, hjust = 1)) +
+      theme(plot.title = element_text(size=8))
     
     return.list <- list("Barplot.by.area" = p1, 
                         "Barplot.by.type" = p2,
                         "spineplot" = p3)
   }
   
-  if(is.null(year)){
-    ## property crime & violent crime ## 
 
-    
-    fig1 <- 
-      dt  %>%
-      filter(State == state) %>%
-      gather(., crimetype, number_of_crime, ViolentCrime:Motorvehicletheft, factor_key = TRUE) %>%
-      filter(Actual == indicator) %>%
-      group_by(Year, State, crimetype) %>%
-      summarise(total = sum(as.numeric(number_of_crime))) %>%
-      filter(!is.na(total)) %>%
-      filter(crimetype %in% c("PropertyCrime", "ViolentCrime")) %>%
-      arrange(Year, crimetype)
-    
-    fig1$Year <- as.character(fig1$Year)
-    
-    min.dt <- min(fig1$total)
-    max.dt <- max(fig1$total)
-    
-    p4 <- ggplot(aes(x=Year, y=total, group=crimetype, col=crimetype), data=fig1) +
-      geom_line()+
-      scale_y_continuous(breaks = seq(min.dt, max.dt, length.out = 10)) + 
-      #scale_x_discrete()
-      xlab("Year") +
-      ylab("Number of Cases") + 
-      ggtitle(paste("Lineplot of Number of Crimes by Year", state, sep="~")) +
-      theme_bw() +
-      theme(axis.text.x = element_text(size = 12, angle = 60, hjust = 1),
-            legend.position = 'right') 
-    
-    return.list <- list("lineplot" = p4)
-  }
   
   
   return(return.list)
@@ -127,7 +98,7 @@ visual.fun <- function(year=NULL, state = 'WISCONSIN',  type='reported', data=dt
 }
 ```
 
-# Bar Plots And Spine Plots in 2019 for 3 States in New England Area
+# Bar Plots And Spine Plots in 2019 for 4 States in New England Area
 
 In this session of the report, we are looking at the bar plots and spine plots for each geographical areas, including metropolitan area (M), cities outside of metropolitan area (O), and rural area (R). There are 3 types of graphs that are generated. 
 
@@ -137,7 +108,7 @@ In this session of the report, we are looking at the bar plots and spine plots f
   
   - The third graph is called "spineplot". It is used to show the proportion of number of cases for each region in certain state. That is, for each crime type, the contribution of each region to each crime type. 
   
-  Let's look at the examples below. The year 2019 is used as our example for illustration purpose. All the relevant plots of other years can be obtained easily by adjusting function parameters. In 2019, we select "MASSACHUSETTS", "CONNECTICUT", "NEW YORK" as our first observation points, as these are the largest New England states. The results are pretty consistent among these states.
+  Let's look at the examples below. The year 2019 is used as our example for illustration purpose. All the relevant plots of other years can be obtained easily by adjusting function parameters. In 2019, we select "MASSACHUSETTS", "CONNECTICUT", "NEW YORK" and "PENNSYLVANIA" as our first observation points, as these are the largest New England states. The results are pretty consistent among these states.
   
 
 
@@ -147,94 +118,93 @@ In this session of the report, we are looking at the bar plots and spine plots f
 fig_CT <- visual.fun(year = 2019, state = "CONNECTICUT")  
 fig_MA <- visual.fun(year = 2019, state = "MASSACHUSETTS") 
 fig_NY <- visual.fun(year = 2019, state = "NEW YORK")  
+fig_PA <- visual.fun(year = 2019, state = "PENNSYLVANIA")  
 
 # The three Barplot.by.type plots show that in all of the states, "property crime" 
 # occurred way more frequent than "violent crime", because it is obviously "easier"
 # to conduct property crimes. And in the property crime category, "larceny theft"
-# is the most frequently occurred one. This observation holds true in almost all 
+# is the most dominant one. This observation holds true in almost all 
 # of the cases.
 
-fig_CT$Barplot.by.type
-fig_MA$Barplot.by.type
-fig_NY$Barplot.by.type
+p1<-fig_CT$Barplot.by.type
+p2<-fig_MA$Barplot.by.type
+p3<-fig_NY$Barplot.by.type
+p4<-fig_PA$Barplot.by.type
+
+plot_grid(p1,p2,p3,p4,ncol=2)
 
 # After dividing the crimes by regions, we can see that most crimes in these 3 
 # states occurred in metropolitan area, which makes sense as this area is the 
 # most populated region, so the crime cases were not surprisingly higher. 
-# However, the cases of "robbery" and "murder and non negligent manslaughter" 
-# mainly occurred in outside of metropolitan and rural areas. This result may 
-# draw attention to potential policy changes on the arrangement of armed police
-# officers and weapon distribution.
+
   
-fig_CT$Barplot.by.area
-fig_MA$Barplot.by.area
-fig_NY$Barplot.by.area
+p5 <- fig_CT$Barplot.by.area
+p6 <- fig_MA$Barplot.by.area
+p7 <-fig_NY$Barplot.by.area
+p8 <- fig_PA$Barplot.by.area
+plot_grid(p5,p6,p7,p8,ncol=2)
 
-# It is shown more clearly here that, in the New England States, most of the 
-# crimes except "robbery" and "murder and non negligent manslaughter" occur in
-# metropolitan area.
-fig_CT$spineplot
-fig_MA$spineplot
-fig_NY$spineplot
+
+# It is shown more clearly here that, in the mega New England States, most of the 
+# crimes occur in metropolitan area. However, the cases of "murder" and "burglary" 
+# occurred a little bit more frequently in outside of metropolitan and rural 
+# areas. This result may draw attention to potential policy changes on the 
+# arrangement of armed police officers and weapon distribution.
+p9 <- fig_CT$spineplot
+p10 <- fig_MA$spineplot
+p11 <- fig_NY$spineplot
+p12 <- fig_PA$spineplot
+plot_grid(p9,p10,p11,p12,ncol=2)
+
 
 
 ```
 
 
-# Bar Plots And Spine Plots in 2019 for IDAHO and MAINE
+# Bar Plots And Spine Plots in 2019 for ALASKA, MAINE, MONTANA and VERMONT
 
-We then explored the crime distributions for state IDAHO and MAINE, ALABAMA and LOUISIANA in pairs, as these states have the closest population. The results are quite interesting comparing to the New England states. 
+We then explored the crime distributions for state ALASKA, MAINE, MONTANA and VERMONT. These are some colder states on the north boarder of the US. And we have
+some interesting reveals.
 
 
 ```{r, warning=FALSE, message=FALSE}
-fig_ID <- visual.fun(year = 2019, state = "IDAHO")  
+fig_AL <- visual.fun(year = 2019, state = "ALASKA")  
 fig_ME <- visual.fun(year = 2019, state = "MAINE") 
+fig_MT <- visual.fun(year = 2019, state = "MONTANA") 
+fig_VT <- visual.fun(year = 2019, state = "VERMONT") 
 
-# We can tell that for state IDAHO and MAINE, "property crime" is also the most 
-# frequently occurred crime, and among it, "larceny theft" is the most one. This
-# consist with our conclusion before. 
+# We can tell that in state ALASKA, MAINE, MONTANA and VERMONT, "property crime"
+# is also the most frequently occurred crime, and among it, "larceny theft" is the 
+# most one. This is consistent with our conclusion before. 
 
-fig_ID$Barplot.by.type
-fig_ME$Barplot.by.type
+p13 <- fig_AL$Barplot.by.type
+p14 <- fig_ME$Barplot.by.type
+p15 <- fig_MT$Barplot.by.type
+p16 <- fig_VT$Barplot.by.type
+plot_grid(p13,p14,p15,p16,ncol=2)
 
-# However, it's quite obvious that in region "outside of metropolitan area" and 
-# "rural area", the number of crime cases appear to be more. But because of the 
-# difference in scales, we need to look at the relative proportion graphs below.
-fig_ID$Barplot.by.area
-fig_ME$Barplot.by.area
+# However, it's quite obvious that in these states, in region "outside of 
+# metropolitan area" and "rural area", the number of crime cases appear to 
+# be a lot more. But because of the difference in scales, we need to look 
+# at the relative proportion graphs below.
+p17 <- fig_AL$Barplot.by.area
+p18 <- fig_ME$Barplot.by.area
+p19 <- fig_MT$Barplot.by.area
+p20 <- fig_VT$Barplot.by.area
+plot_grid(p17,p18,p19,p20,ncol=2)
 
-# The graphs here verify our hypothesis. The graph structure is very different 
-# from the ones in New England states. The proportion of each crimes in area "M:
-# are visibly larger, especially for "murder and non negligent 
-# manslaughter". While in New England states, metropolitan barely has any
-# contribution to it, but in these two states, the percentage increases a lot.
-# In Maine, the contribution of each region to the crime is a lot more even.
+# The graph structure is very different from the ones in New England states. 
+# The proportion of each crimes in area "O" and "R" are visibly larger. 
+# Therefore, the distribution of crimes in each area is more even, and in 
+# state of MONTANA and VERMONT, some crimes such as murder and assault, the 
+# cases in "O" and "R" even exceed "M" area. 
 
-fig_ID$spineplot
-fig_ME$spineplot
-
-
-```
-
-# Bar Plots And Spine Plots in 2019 for ALABAMA and LOUISIANA
-
-For the other pair of closely populated states, "ALABAMA" and "LOUISIANA", the distribution and observation is very similar to the 3 New England states. The number of "property crime" and "larceny" lead the board. And most of the crimes occurred in metropolitan area, except for "robbery" and "murder and non negligent manslaughter".
-
-
-```{r, warning=FALSE, message=FALSE}
-fig_AL <- visual.fun(year = 2019, state = "ALABAMA")  
-fig_LO <- visual.fun(year = 2019, state = "LOUISIANA") 
-
-
-fig_AL$Barplot.by.type
-fig_LO$Barplot.by.type
-
-fig_AL$Barplot.by.area
-fig_LO$Barplot.by.area
-
-
-fig_AL$spineplot
-fig_LO$spineplot
+p21 <- fig_AL$spineplot
+p22 <- fig_ME$spineplot
+p23 <- fig_MT$spineplot
+p24 <- fig_VT$spineplot
+plot_grid(p21,p22,p23,p24,ncol=2)
 
 
 ```
+
