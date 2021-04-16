@@ -19,7 +19,7 @@ visual.fun <- function(year=NULL, state = 'WISCONSIN',  type='reported', data=dt
     fig <- 
       mydata  %>%
       dplyr::filter(State == state) %>%
-      gather(., crimetype, number_of_crime, ViolentCrime:Motorvehicletheft, factor_key = TRUE) %>%
+      gather(., crimetype, number_of_crime, ViolentCrime:VehicleTheft, factor_key = TRUE) %>%
       dplyr::filter(Actual == indicator)%>%
       dplyr::filter(!is.na(as.numeric(number_of_crime)))
     
@@ -45,7 +45,7 @@ visual.fun <- function(year=NULL, state = 'WISCONSIN',  type='reported', data=dt
     fig1 <- 
       mydata  %>%
       dplyr::filter(State == state) %>%
-      gather(., crimetype, number_of_crime, ViolentCrime:Motorvehicletheft, factor_key = TRUE) %>%
+      gather(., crimetype, number_of_crime, ViolentCrime:VehicleTheft, factor_key = TRUE) %>%
       dplyr::filter(Actual == indicator) %>%
       group_by(State, crimetype) %>%
       summarise(total = sum(as.numeric(number_of_crime))) %>%
