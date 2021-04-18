@@ -2,8 +2,8 @@ library(ggplot2)
 library(tidyr)
 library(dplyr)
 
-
-dt <- read.csv("/Users/mli0316/Desktop/UConn/stat 5225/group proj/raw data/alldata_Part1.csv")
+##
+dt <- read.csv("/Users/mli0316/Desktop/UConn/stat5225/groupproj/raw data/alldata_Part1.csv")
 
 
 ### By area by crime type ###
@@ -19,7 +19,7 @@ visual.fun <- function(year=NULL, state = 'WISCONSIN',  type='reported', data=dt
     fig <- 
       mydata  %>%
       dplyr::filter(State == state) %>%
-      gather(., crimetype, number_of_crime, ViolentCrime:Motorvehicletheft, factor_key = TRUE) %>%
+      gather(., crimetype, number_of_crime, ViolentCrime:VehicleTheft, factor_key = TRUE) %>%
       dplyr::filter(Actual == indicator)%>%
       dplyr::filter(!is.na(as.numeric(number_of_crime)))
     
@@ -45,7 +45,7 @@ visual.fun <- function(year=NULL, state = 'WISCONSIN',  type='reported', data=dt
     fig1 <- 
       mydata  %>%
       dplyr::filter(State == state) %>%
-      gather(., crimetype, number_of_crime, ViolentCrime:Motorvehicletheft, factor_key = TRUE) %>%
+      gather(., crimetype, number_of_crime, ViolentCrime:VehicleTheft, factor_key = TRUE) %>%
       dplyr::filter(Actual == indicator) %>%
       group_by(State, crimetype) %>%
       summarise(total = sum(as.numeric(number_of_crime))) %>%
@@ -82,50 +82,49 @@ visual.fun <- function(year=NULL, state = 'WISCONSIN',  type='reported', data=dt
                         "spineplot" = p3)
   }
   
-  if(is.null(year)){
-    ## property crime & violent crime ## 
-
+#  if(is.null(year)){
+#   ## property crime & violent crime ## 
     
-    fig1 <- 
-      dt  %>%
-      dplyr::filter(State == state) %>%
-      gather(., crimetype, number_of_crime, ViolentCrime:Motorvehicletheft, factor_key = TRUE) %>%
-      dplyr::filter(Actual == indicator) %>%
-      group_by(Year, State, crimetype) %>%
-      summarise(total = sum(as.numeric(number_of_crime))) %>%
-      dplyr::filter(!is.na(total)) %>%
-      dplyr::filter(crimetype %in% c("PropertyCrime", "ViolentCrime")) %>%
-      arrange(Year, crimetype)
     
-    fig1$Year <- as.character(fig1$Year)
+#    fig1 <- 
+#      dt  %>%
+#      dplyr::filter(State == state) %>%
+#      gather(., crimetype, number_of_crime, ViolentCrime:Motorvehicletheft, factor_key = TRUE) %>%
+#      dplyr::filter(Actual == indicator) %>%
+#      group_by(Year, State, crimetype) %>%
+#     summarise(total = sum(as.numeric(number_of_crime))) %>%
+#      dplyr::filter(!is.na(total)) %>%
+#      dplyr::filter(crimetype %in% c("PropertyCrime", "ViolentCrime")) %>%
+#      arrange(Year, crimetype)
+#    
+#    fig1$Year <- as.character(fig1$Year)
     
-    min.dt <- min(fig1$total)
-    max.dt <- max(fig1$total)
+#    min.dt <- min(fig1$total)
+#    max.dt <- max(fig1$total)
     
-    p4 <- ggplot(aes(x=Year, y=total, group=crimetype, col=crimetype), data=fig1) +
-      geom_line()+
-      scale_y_continuous(breaks = seq(min.dt, max.dt, length.out = 10)) + 
-      #scale_x_discrete()
-      xlab("Year") +
-      ylab("Number of Cases") + 
-      ggtitle(paste("Lineplot of Number of Crimes by Year", state, sep="~")) +
-      theme_bw() +
-      theme(axis.text.x = element_text(size = 12, angle = 60, hjust = 1),
-            legend.position = 'right') 
+#    p4 <- ggplot(aes(x=Year, y=total, group=crimetype, col=crimetype), data=fig1) +
+#      geom_line()+
+#      scale_y_continuous(breaks = seq(min.dt, max.dt, length.out = 10)) + 
+#      #scale_x_discrete()
+#      xlab("Year") +
+#      ylab("Number of Cases") + 
+#      ggtitle(paste("Lineplot of Number of Crimes by Year", state, sep="~")) +
+#      theme_bw() +
+#      theme(axis.text.x = element_text(size = 12, angle = 60, hjust = 1),
+#            legend.position = 'right') 
     
-    return.list <- list("lineplot" = p4)
-  }
+#    return.list <- list("lineplot" = p4)
+#  }
   
   
   return(return.list)
   
 }
 
-aaa <- visual.fun(year = 2010, state = "ALABAMA")
+aaa <- visual.fun(year = 2019, state = "MASSACHUSETTS")
 
 aaa$Barplot.by.area
 aaa$Barplot.by.type
 aaa$spineplot
 
-aaa$lineplot
-
+#aaa$lineplot
