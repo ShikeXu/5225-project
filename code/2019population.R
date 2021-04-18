@@ -24,3 +24,10 @@ pop2019
 
 #write.csv(pop2019, file = "~/Desktop/2021spring/5225/group_assign/5225-project/2019population.csv")
 
+data<-read.csv("~/Desktop/2021spring/5225/group_assign/5225-project/2019population.csv")
+data$State[data$State == "DISTRICT OF COLUMBIA3"]<-"DISTRICT OF COLUMBIA"
+data$State[data$State == "MISSISSIPPI4"]<-"MISSISSIPPI"
+data$State[data$State == "OHIO4"]<-"OHIO"
+data$State[data$State == "OREGON4"]<-"OREGON"
+data<-data[,c("State", "Population")]
+#write.csv(data, file = "~/Desktop/2021spring/5225/group_assign/5225-project/2019Pop.csv")
