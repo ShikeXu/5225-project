@@ -1,13 +1,13 @@
 library(dplyr)
 library(magrittr)
 library(trend)
-alldata_Part1<-read.csv('C:/Users/sirius/Desktop/group assignment/alldata_Part1.csv')
-alldata_Part2<-read.csv('C:/Users/sirius/Desktop/group assignment/alldata_Part2.csv') 
+alldata_Part1<-read.csv('C:/Users/sirius/Desktop/5225project/5525-project/raw data/alldata_Part1.csv')
+alldata_Part2<-read.csv('C:/Users/sirius/Desktop/5225project/5525-project/raw data/alldata_Part2.csv') 
 
 # test the trend of increasing in crime rate
 trend.test<-function(year,state,crime){
   cat(format('state',width = 12),format('crime type',width = 20),
-      format('estimate',width = 9,justify = 'right'),format('std error',width = 9,justify = 'right'),format('p-value',width = 9,justify = 'right'),
+      format('estimate',width = 9,justify = 'right'),format('p-value',width = 9,justify = 'right'),
       format('MK.test',width = 9,justify = 'right'),'\n')
   for (s in state) {
     for (c in crime) {
@@ -19,7 +19,7 @@ trend.test<-function(year,state,crime){
         dt %$%
         lm(.[,c]~.[,'Year']) %>%
         summary() %$%
-        coefficients[2,-3]
+        coefficients[2,c(1,4)]
       
       mk_test<-
         dt %$%
@@ -35,27 +35,20 @@ trend.test(year = 2003:2019,state = c('ALASKA','MAINE','NEVADA'),crime = c('Robb
 
 # find the state pairs with close pop
 
-popmatch<-function(state,pop){
-  pair=c()
-  diff=c()
-  
-  for (i in 1:length(pop)) {
-    o<-order(abs(pop[i]-pop[]))[2:6]
-    pair<-c(pair,paste(state[i],state[o]))
-    diff<-c(diff,abs(pop[i]-pop[o]))
-  }
-  
-  data.frame(pair,diff) %>%
-    .[order(diff)[1:20],] %>%
-  return()
+popmatch_2019<-function(s){
+
+  o<-order(abs(pop[state==s]-pop[]))[2:6]
+  pair<-state[o]
+  diff<-abs(pop[state==s]-pop[o])
+  return(data.frame(pair,diff))
 }
 
 # test
 
-popmatch(state = dt2$State,pop = pop)
+popmatch_2019("CONNECTICUT")
+pop2019<-read.csv('C:/Users/sirius/Desktop/5225project/5525-project/raw data/2019population.csv')[,-1]
+state<-pop2019$State
+pop<-pop2019$Population
+popmatch_2019("CONNECTICUT")
 
-
-
-  
-
-  
+trend.test(year = 2001:2019,state = c("UTAH", "CONNECTICUT","OKLAHOMA","IOWA"),crime = c("PropertyCrime"))  
